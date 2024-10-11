@@ -1,7 +1,9 @@
 const express = require('express')
 const app = express()
 const bodyParser = require("body-parser")
+const cors = require('cors')
 
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false} ))
 app.use(bodyParser.json())
 
@@ -78,7 +80,7 @@ app.put('/games/:id', (req, res) => {
             if (price != undefined) game.price = price
             if (year != undefined) game.year = year
         res.sendStatus(200)
-        
+
         }else {
             res.sendStatus(404);
         }
