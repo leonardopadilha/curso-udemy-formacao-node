@@ -2,6 +2,9 @@ const express = require('express')
 const app = express()
 const bodyParser = require("body-parser")
 const cors = require('cors')
+const jwt = require("jsonwebtoken")
+
+const JWTSECRET = "KJFÇAKSLHFÇAHSKjlkjfksdjf2897423547"
 
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false} ))
@@ -12,6 +15,10 @@ const DB = {
         { id: 23, title: "Call of duty MW", year: 2019, price: 60 },
         { id: 65, title: "Sea of thieves", year: 2018, price: 40 },
         { id: 2, title: "Minecraft", year: 2012, price: 20 }
+    ],
+    users: [
+        { id: 1, name: "John", email: "john@example.com", password: "node123" },
+        { id: 2, name: "Maria", email: "maria@example.com", password: "java123"}
     ]
 }
 
@@ -84,6 +91,39 @@ app.put('/games/:id', (req, res) => {
         }else {
             res.sendStatus(404);
         }
+    }
+})
+
+app.post("/auth", (req, res) => {
+    const { email, password } = req.body
+
+    if (email != undefined) {
+        const user = DB.users.find(u => u.email == email)
+
+        if (user != undefined) {
+            if (user.password == password) {
+
+                jwt.sign({id: user.id, email: user.email}, JWTSECRET, { expiresIn: '1h'}, (err, token) => {
+                    if(err) {
+                        res.status(400)
+                        res.json({ err: "Falha interna" })
+                    }else {
+                        res.status(200)
+                        res.json({ email, token })
+                    }
+                })
+            }else {
+                res.status(401)
+                res.json({ message: "Credenciais inválidas!" })
+            }
+        }else {
+            res.status(404)
+            res.json({ err: "O e-mail enviado não existe na base de dados!" })
+        }
+
+    }else {
+        res.status(400)
+        res.json({ err: "O e-mail enviado é inválido" })
     }
 })
 
