@@ -10,6 +10,30 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false} ))
 app.use(bodyParser.json())
 
+function auth(req, res, next) {
+    const authToken = req.headers['authorization']
+
+    if (authToken != undefined) {
+        const bearer = authToken.split(' ')
+        const token = bearer[1]
+        
+        jwt.verify(token, JWTSECRET, (err, data) => {
+            if (err) {
+                res.status(401)
+                res.json({ err: "Token inválido!" })
+            }else {
+                req.token = token
+                req.loggedUser = { id: data.id, email: data.email }
+                next()
+            }
+        })
+
+    }else {
+        res.status(401)
+        res.json({ err: "Token inválido!" })
+    }
+}
+
 const DB = {
     games: [
         { id: 23, title: "Call of duty MW", year: 2019, price: 60 },
@@ -22,9 +46,9 @@ const DB = {
     ]
 }
 
-app.get('/games', (req, res) => {
+app.get('/games', auth, (req, res) => {
     res.statusCode = 200;
-    res.json(DB.games);
+    res.json({ user: req.loggedUser, game: DB.games });
 });
 
 app.get('/games/:id', (req, res) => {
