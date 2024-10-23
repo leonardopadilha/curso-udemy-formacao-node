@@ -47,8 +47,26 @@ const DB = {
 }
 
 app.get('/games', auth, (req, res) => {
+    const HATEOAS = [
+        {
+            href: "http://localhost:45679/games/0",
+            method: "DELETE",
+            rel: "delete_game"
+        },
+        {
+            href: "http://localhost:45679/games/0",
+            method: "GET",
+            rel: "get_games"
+        },
+        {
+            href: "http://localhost:45679/auth",
+            method: "POST",
+            rel: "login"
+        }
+    ]
+
     res.statusCode = 200;
-    res.json({ user: req.loggedUser, game: DB.games });
+    res.json({ user: req.loggedUser, game: DB.games, _links: HATEOAS });
 });
 
 app.get('/games/:id', (req, res) => {
@@ -56,11 +74,35 @@ app.get('/games/:id', (req, res) => {
         res.sendStatus(400)        
     }else {
         const id = parseInt(req.params.id);
+
+        const HATEOAS = [
+            {
+                href: `http://localhost:45679/games/${id}`,
+                method: "DELETE",
+                rel: "delete_game"
+            },
+            {
+                href: `http://localhost:45679/games/${id}`,
+                method: "PUT",
+                rel: "edit_game"
+            },
+            {
+                href: `http://localhost:45679/games/${id}`,
+                method: "GET",
+                rel: "get_game"
+            },
+            {
+                href: "http://localhost:45679/games/0",
+                method: "GET",
+                rel: "get_games"
+            }
+        ]
+
         const game = DB.games.find(game => game.id === id);
 
         if (game != undefined) {
             res.statusCode = 200;
-            res.json(game)
+            res.json({ game, _links: HATEOAS})
         }else {
             res.sendStatus(404);
         }
