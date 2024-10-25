@@ -25,15 +25,23 @@ app.use(session({
 app.use(flash())
 
 app.get('/', (req, res) => {
-  res.render("index")
+  var emailError = req.flash("emailError")
+  var pontosError = req.flash("pontosError")
+  var nomeError = req.flash("nomeError")
+  var email = req.flash("email")
+
+  emailError = (emailError == undefined || emailError.length == 0) ? undefined : emailError
+  email = (email == undefined || email.length == 0) ? "" : email
+
+  res.render("index", { emailError, pontosError, nomeError, email })
 })
 
 app.post('/form', (req, res) => {
   const { email, nome, pontos } = req.body
 
-  let emailError;
-  let pontosError;
-  let nomeError;
+  var emailError;
+  var pontosError;
+  var nomeError;
 
   if (email == undefined || email == "") {
     emailError = "O campo e-mail é obrigatório"
@@ -52,13 +60,17 @@ app.post('/form', (req, res) => {
   }
 
   if (emailError != undefined || pontosError != undefined || nomeError != undefined) {
+    req.flash("emailError", emailError)
+    req.flash("pontosError", pontosError)
+    req.flash("nomeError", nomeError)
+
+    req.flash("email", email)
+
     res.redirect("/")
   }else {
     res.send("SHOW DE BOLA ESSE FORM!")
   }
 
-
-  
   res.send(email)
 })
 
