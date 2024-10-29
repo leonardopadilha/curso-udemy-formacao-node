@@ -91,8 +91,74 @@ database.where({ id: 3 }).update({ preco: 130.55}).table("games").then(data => {
 }) */
 
 
+/* order by 
 database.select().table("games").orderBy("preco", "desc").then(data => {
   console.log(data)
 }).catch(err => {
   console.log(err)
-})
+}) */
+
+
+/* INserção associada 
+database.insert({
+  nome: 'Blizzard',
+  game_id: 4
+}).table("estudios").then(dados => {
+  console.log(dados)
+}).catch(err => {
+  console.log(err)
+}) */
+
+
+/* Join sem where 
+database.select(["games.id", "games.nome as game", "estudios.nome as estudio", "games.preco"]).table("games").innerJoin("estudios", "estudios.game_id", "games.id").then(data => {
+  console.log(data)
+}).catch(err => {
+  console.log(err)
+}) 
+
+database.select(["games.*", "estudios.nome as estudio"]).table("games").innerJoin("estudios", "estudios.game_id", "games.id").then(data => {
+  console.log(data)
+}).catch(err => {
+  console.log(err)
+}) */
+
+
+/* Join 1 para 1 com where   
+database.select(["games.*", "estudios.nome as estudio"])
+              .table("games")
+              .innerJoin("estudios", "estudios.game_id", "games.id")
+              .whereRaw("games.id > 2")
+              .then(data => {console.log(data) })
+                .catch(err => { console.log(err) })
+
+
+database.select(["games.*", "estudios.nome as estudio"])
+          .table("games")
+          .innerJoin("estudios", "estudios.game_id", "games.id")
+          .where("games.id", 4)
+          .then(data => {console.log(data) })
+            .catch(err => { console.log(err) })  */
+
+
+/* Join 1 para N 
+database.select(["games.id", "games.nome AS game", "estudios.nome AS estudio_nome", "games.preco"]).table("games").innerJoin("estudios", "estudios.game_id", "games.id").then(data => {
+  let game = {
+    id: 0,
+    nome: '',
+    estudios: []
+  }
+
+  game.id = data[0].id
+  game.nome = data[0].game
+
+  data.forEach(estudio => {
+    game.estudios.push({ nome: estudio.estudio_nome })
+  })
+  console.log(game)
+
+}).catch(err => {
+  console.log(err)
+})  */
+
+                
