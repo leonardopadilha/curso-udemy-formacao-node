@@ -3,7 +3,21 @@ const User = require("../models/User")
 class UsersController {
   
   async index(req, res) {
+    const users = await User.findAll()
+    res.json(users)
+  }
 
+  async userById(req, res) {
+    const id = req.params.id
+    const user = await User.findById(id)
+
+    if (user == undefined) {
+      res.status(404)
+      res.json({})
+    }else {
+      res.status(200)
+      res.json(user)
+    }
   }
 
   async create(req, res) {
