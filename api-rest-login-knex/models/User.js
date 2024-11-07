@@ -45,14 +45,14 @@ class User {
       const result = await knex.select("*").from("users").where({ email: email})
 
       if (result.length > 0) {
-        return true
+        return result[0]
       }else {
-        return false
+        return undefined
       }
 
     } catch (error) {
       console.log(error)
-      return false
+      return undefined
     }
   }
 
