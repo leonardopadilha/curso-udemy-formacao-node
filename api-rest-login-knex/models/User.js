@@ -1,5 +1,6 @@
 const knex = require("../database/connection")
 const bcrypt = require("bcrypt")
+const PasswordToken = require('./PasswordToken')
 
 class User {
 
@@ -108,6 +109,12 @@ class User {
       return { status: false, err: `O id ${id} não foi encontrado` }
     }
 
+  }
+
+  async changePassword(newPassword, id, token) {
+    const hash = await bcrypt.hash(newPassword, 10)
+    await knex.update({ password: hash }).where({ id: id }).table('users')
+    await knex.update({ used: 1 }).where({ token: token }).table('passwordToken')
   }
 }
 
