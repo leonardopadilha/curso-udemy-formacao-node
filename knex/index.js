@@ -161,4 +161,50 @@ database.select(["games.id", "games.nome AS game", "estudios.nome AS estudio_nom
   console.log(err)
 })  */
 
+/* Relacionamento N para N 
+database.select([
+          "games.id AS id_game",
+          "estudios.id AS id_estudio",
+          "estudios.nome AS estudio_nome",
+          "games.nome AS game_nome",
+          "games.preco AS game_preco"
+])
+          .table("games_estudios")
+          .innerJoin("games", "games.id", "games_estudios.game_id")
+          .innerJoin("estudios", "estudios.id", "games_estudios.estudio_id")
+          .where("games_estudios.game_id", 3)
+          .then(data => { console.log(data) })
+            .catch(err => { console.log(err) }) */
+
+/* Transação 
+async function testeTransacao() {
+  try {
+    await database.transaction(async t => {
+      await database.insert({ nome: "Qualquer nome"}).table("estudios")
+      await database.insert({ nome: "Pyxerelia"}).table("estudios")
+      await database.insert({ nome: "Mojang"}).table("estudios")
+      await database.insert({ nome: "Gearbox"}).table("estudios")
+    })
+  }catch(err) {
+    console.log(err)
+  }
+}
+
+testeTransacao()
+
+async function testeTransacao() {
+  try {
+    await database.transaction(async t => {
+      await t.insert({ nome: "Qualquer nome II"}).table("estudios")
+    })
+  }catch(err) {
+    console.log(err)
+  }
+}
+
+testeTransacao()
+*/
+
+
+
                 
